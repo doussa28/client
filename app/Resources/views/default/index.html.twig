@@ -1,0 +1,142 @@
+
+
+{% extends 'base.html.twig' %}
+{% block body %}
+   
+
+
+    <div class="w3-container w3-border w3-border-deep-orange w3-padding-large" style="margin: 20px 20%;" >
+
+        <div>
+
+            <p id="label_user"><b><label>Users </label></b></p>
+
+            <select type="text"    id="selection" style= 'width: 200px;' >
+			<option>Choose user</option>
+            </select>
+
+        </div>
+
+        <br> 
+            <p id="label_user"><b><label>Liste of commissions </label></b></p><br>
+
+        <div>
+
+            <table border style='width:100%' bgcolor='pink' >
+
+                <thead>
+
+                    <tr>
+
+                        <th>user</th>
+
+                        <th>Marchant</th>
+
+                        <th>Date</th>
+
+                        <th>CashBack</th>
+
+                    </tr>
+
+                </thead>
+
+               <tbody id="tab"></tbody>
+
+            </table>
+
+        </div>
+
+      
+
+    </div>
+
+    <script src="{{ asset('js/jquery-3.2.1.min.js') }}"></script>
+
+{% endblock %}
+
+
+
+{% block stylesheets %}
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="{{ asset('css/scss.css') }}" />
+
+{% endblock %}
+
+
+{% block javascripts %}
+
+    <script>
+
+        $(document).ready(function(){
+
+            $.getJSON( 
+
+             "http://localhost/my_api/web/app_dev.php/users",
+
+             function( users ) {
+
+                var html="";
+
+                   $.each( users , function(key ,value){
+
+                       html += "<option value='"+value.id+"'> "+ value.name +" </option>";
+
+                   });
+
+                 $("#selection").append(html);
+
+                 $(".fa-refresh").remove();
+
+            })
+
+            $("select#selection").change( function () {
+
+               $("#selection").after("<img id='loader' src='{{ asset('image/giphy.gif') }}' height='20px' /> ");
+
+               var idUser =  this.value ;
+
+                $("#tab").html();
+
+                $.getJSON(
+
+                    "http://localhost/my_api/web/app_dev.php/commissions/"+idUser ,
+
+                    function( commissions ) {
+
+                        var html="";
+
+                        $.each( commissions , function(key ,value){
+
+                            html += "<tr> "+
+
+                                    "<td>"+ value.user +"</td>" +
+
+                                    "<td>"+ value.marchant +"</td>" +
+
+                                    "<td>"+ value.date +"</td>" +
+
+                                    "<td>"+ value.cashback + " € </td>" +
+
+                                +" </tr>";
+
+                        });
+
+
+
+                        $("#tab").html(html);
+
+                        $("#loader").remove();
+
+                    }
+
+                )
+
+            })
+
+        });
+
+    </script>
+
+{% endblock %}
